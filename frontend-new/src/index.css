@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@theme {
+    --color-indigo-50: oklch(0.962 0.018 272.314);
+    --color-indigo-600: oklch(0.511 0.262 276.966);
+    --color-indigo-700: oklch(0.43 0.232 276.966);
+    --color-sky-50: oklch(0.977 0.013 236.62);
+    --color-sky-200: oklch(0.907 0.048 230.225);
+    --color-slate-50: oklch(0.984 0.003 247.858);
+    --color-slate-100: oklch(0.968 0.007 247.896);
+    --color-slate-200: oklch(0.923 0.014 251.05);
+    --color-slate-400: oklch(0.704 0.04 256.788);
+    --color-slate-500: oklch(0.552 0.052 257.58);
+    --color-slate-700: oklch(0.371 0.051 257.685);
+    --color-slate-800: oklch(0.279 0.041 260.031);
+    --color-slate-900: oklch(0.208 0.042 265.755);
+}
+
+@layer base {
+    body {
+        @apply bg-slate-50 text-slate-900 antialiased;
+    }
+}
+
+@layer components {
+    .glass {
+        @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+    }
+
+    .btn-primary {
+        @apply px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition duration-300 shadow-lg shadow-indigo-200 transform hover:-translate-y-0.5 active:translate-y-0;
+    }
+
+    .input-field {
+        @apply w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition duration-200;
+    }
+}
