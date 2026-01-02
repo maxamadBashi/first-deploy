@@ -65,7 +65,7 @@ router.post('/login', async (req, res) => {
 
         // Generate JWT
         const token = jwt.sign(
-            { id: user.id, username: user.username },
+            { id: user.id, username: user.username, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         );
@@ -76,7 +76,8 @@ router.post('/login', async (req, res) => {
             user: {
                 id: user.id,
                 username: user.username,
-                email: user.email
+                email: user.email,
+                role: user.role
             }
         });
     } catch (error) {
@@ -88,7 +89,7 @@ router.post('/login', async (req, res) => {
 // GET /api/auth/profile (protected route)
 router.get('/profile', authMiddleware, async (req, res) => {
     try {
-        const userRes = await db.query('SELECT id, username, email, created_at FROM users WHERE id = $1', [req.user.id]);
+        const userRes = await db.query('SELECT id, username, email, role, created_at FROM users WHERE id = $1', [req.user.id]);
         if (userRes.rows.length === 0) {
             return res.status(404).json({ message: 'User not found' });
         }

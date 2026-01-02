@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api';
-import { LogOut, User as UserIcon, Settings, Bell, Search, LayoutGrid, ShieldCheck } from 'lucide-react';
+import { LogOut, User as UserIcon, Settings as SettingsIcon, Bell, Search, LayoutGrid, ShieldCheck, Mail, ShoppingBag, Utensils, Layers, Users, Truck, Database, CreditCard, BarChart, Tag, MessageSquare, Info } from 'lucide-react';
+import Overview from '../components/admin/Overview';
+import MenuManager from '../components/admin/MenuManager';
+import CategoryManager from '../components/admin/CategoryManager';
+import OrderManager from '../components/admin/OrderManager';
+import TableManager from '../components/admin/TableManager';
+import StaffManager from '../components/admin/StaffManager';
+import InventoryManager from '../components/admin/InventoryManager';
+import Settings from '../components/admin/Settings';
 
 const Dashboard = () => {
     const [user, setUser] = useState(null);
+    const [activeSection, setActiveSection] = useState('dashboard');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -12,6 +21,9 @@ const Dashboard = () => {
             try {
                 const res = await API.get('/auth/profile');
                 setUser(res.data);
+                if (res.data.role !== 'admin' && res.data.role !== 'manager') {
+                    // navigate('/login'); // Uncomment after testing or if you want strict enforcement
+                }
             } catch (err) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
@@ -47,18 +59,28 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                <nav className="flex-1 px-4 py-4 space-y-1">
+                <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar">
                     {[
-                        { icon: LayoutGrid, label: 'Dashboard', active: true },
-                        { icon: UserIcon, label: 'Profile Settings', active: false },
-                        { icon: Bell, label: 'Notifications', active: false },
-                        { icon: Settings, label: 'Security', active: false },
-                    ].map((item, idx) => (
+                        { id: 'dashboard', icon: LayoutGrid, label: 'Dashboard' },
+                        { id: 'menu', icon: Utensils, label: 'Menu Management' },
+                        { id: 'categories', icon: Layers, label: 'Categories' },
+                        { id: 'orders', icon: ShoppingBag, label: 'Order Management' },
+                        { id: 'tables', icon: Database, label: 'Table Management' },
+                        { id: 'customers', icon: Users, label: 'Customers' },
+                        { id: 'staff', icon: Users, label: 'Staff Management' },
+                        { id: 'inventory', icon: Database, label: 'Inventory' },
+                        { id: 'payments', icon: CreditCard, label: 'Payments' },
+                        { id: 'reports', icon: BarChart, label: 'Reports' },
+                        { id: 'offers', icon: Tag, label: 'Offers & Promos' },
+                        { id: 'feedback', icon: MessageSquare, label: 'Feedback' },
+                        { id: 'settings', icon: SettingsIcon, label: 'System Settings' },
+                    ].map((item) => (
                         <button
-                            key={idx}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all duration-200 ${item.active
-                                    ? 'bg-indigo-50 text-indigo-600 shadow-sm shadow-indigo-100'
-                                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                            key={item.id}
+                            onClick={() => setActiveSection(item.id)}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all duration-200 ${activeSection === item.id
+                                ? 'bg-indigo-50 text-indigo-600 shadow-sm shadow-indigo-100'
+                                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                                 }`}
                         >
                             <item.icon size={20} />
@@ -118,68 +140,27 @@ const Dashboard = () => {
 
                 {/* Content Area */}
                 <main className="flex-1 p-6 lg:p-10 max-w-7xl mx-auto w-full">
-                    <div className="mb-10">
-                        <h2 className="text-3xl font-black text-slate-900 tracking-tight">Overview</h2>
-                        <p className="text-slate-500 font-medium mt-1">Check your latest security status and activity logs.</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                        {[
-                            { label: 'Account Status', value: 'Active', color: 'bg-emerald-50 text-emerald-600' },
-                            { label: 'Security Level', value: 'High', color: 'bg-indigo-50 text-indigo-600' },
-                            { label: 'Last Login', value: 'Just now', color: 'bg-sky-50 text-sky-600' },
-                        ].map((stat, i) => (
-                            <div key={i} className="bg-white p-6 rounded-3xl border border-slate-200 flex flex-col gap-2 shadow-sm hover:shadow-md transition-shadow">
-                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{stat.label}</p>
-                                <div className="flex items-center justify-between">
-                                    <p className="text-2xl font-black text-slate-900">{stat.value}</p>
-                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${stat.color}`}>Verified</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm">
-                        <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                            <h3 className="font-black text-slate-900 text-lg">My Information</h3>
-                            <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:text-indigo-600 hover:border-indigo-100 transition-all shadow-sm">Download Logs</button>
-                        </div>
-                        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
-                            <div className="space-y-6">
-                                <div>
-                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Display Name</p>
-                                    <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                        <UserIcon className="text-indigo-500" size={20} />
-                                        <span className="font-bold text-slate-800">{user.username}</span>
+                    {(() => {
+                        switch (activeSection) {
+                            case 'dashboard': return <Overview />;
+                            case 'menu': return <MenuManager />;
+                            case 'categories': return <CategoryManager />;
+                            case 'orders': return <OrderManager />;
+                            case 'tables': return <TableManager />;
+                            case 'staff': return <StaffManager />;
+                            case 'inventory': return <InventoryManager />;
+                            case 'settings': return <Settings />;
+                            default: return (
+                                <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[2rem] border border-slate-200 border-dashed">
+                                    <div className="p-6 bg-slate-50 rounded-3xl text-slate-400 mb-4">
+                                        <Info size={48} />
                                     </div>
+                                    <h3 className="text-xl font-black text-slate-900 capitalize">{activeSection.replace('-', ' ')}</h3>
+                                    <p className="text-slate-500 font-medium">Qaybtan waa la dhisayaa dhawaan...</p>
                                 </div>
-                                <div>
-                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Email Identity</p>
-                                    <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                        <Mail className="text-indigo-500" size={20} />
-                                        <span className="font-bold text-slate-800">{user.email}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-indigo-600 rounded-3xl p-8 text-white relative overflow-hidden group">
-                                <div className="relative z-10 h-full flex flex-col justify-between">
-                                    <div>
-                                        <ShieldCheck size={40} className="mb-4 text-indigo-200" />
-                                        <h4 className="text-xl font-bold mb-2">Security Shield Active</h4>
-                                        <p className="text-indigo-100 text-sm leading-relaxed">
-                                            Your account is protected by industry-standard JWT encryption and bcrypt hashing algorithms.
-                                        </p>
-                                    </div>
-                                    <button className="mt-8 bg-white/20 hover:bg-white/30 backdrop-blur-md px-6 py-3 rounded-2xl font-bold transition-all text-sm self-start">
-                                        Enhance Security
-                                    </button>
-                                </div>
-                                {/* Decorative circles */}
-                                <div className="absolute top-1/2 left-3/4 w-64 h-64 bg-indigo-500 rounded-full blur-3xl opacity-50 group-hover:scale-110 transition-transform"></div>
-                            </div>
-                        </div>
-                    </div>
+                            );
+                        }
+                    })()}
                 </main>
             </div>
         </div>
