@@ -2,24 +2,24 @@ import React from 'react';
 
 const CategoryTabs = ({ categories, activeCategory, onCategoryChange }) => {
     return (
-        <div className="sticky top-[73px] z-20 bg-white/80 backdrop-blur-md border-b border-slate-100 py-4 overflow-x-auto no-scrollbar px-6">
-            <div className="flex items-center gap-3">
+        <div className="sticky top-[81px] z-30 bg-white/60 backdrop-blur-xl border-b border-white/20 py-4 overflow-x-auto no-scrollbar px-6 shadow-sm shadow-slate-200/20 transition-all duration-300">
+            <div className="flex items-center gap-3 max-w-7xl mx-auto">
                 <button
                     onClick={() => onCategoryChange(null)}
-                    className={`whitespace-nowrap px-6 py-2.5 rounded-2xl font-bold text-sm transition-all duration-300 ${activeCategory === null
-                        ? 'bg-orange-500 text-white shadow-lg shadow-orange-200 lg:scale-105'
-                        : 'bg-orange-50 text-orange-600 hover:bg-orange-100'
+                    className={`whitespace-nowrap px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-500 transform ${activeCategory === null
+                            ? 'bg-orange-600 text-white shadow-xl shadow-orange-600/20 scale-105'
+                            : 'bg-white/50 text-slate-400 hover:text-orange-600 hover:bg-white border border-transparent hover:border-orange-100 hover:shadow-lg hover:shadow-slate-200/50'
                         }`}
                 >
-                    All items
+                    All Items
                 </button>
                 {categories.map((cat) => (
                     <button
                         key={cat.id}
                         onClick={() => onCategoryChange(cat.id)}
-                        className={`whitespace-nowrap px-6 py-2.5 rounded-2xl font-bold text-sm transition-all duration-300 ${activeCategory === cat.id
-                            ? 'bg-orange-500 text-white shadow-lg shadow-orange-200 lg:scale-105'
-                            : 'bg-orange-50 text-orange-600 hover:bg-orange-100'
+                        className={`whitespace-nowrap px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-500 transform ${activeCategory === cat.id
+                                ? 'bg-orange-600 text-white shadow-xl shadow-orange-600/20 scale-105'
+                                : 'bg-white/50 text-slate-400 hover:text-orange-600 hover:bg-white border border-transparent hover:border-orange-100 hover:shadow-lg hover:shadow-slate-200/50'
                             }`}
                     >
                         {cat.name}

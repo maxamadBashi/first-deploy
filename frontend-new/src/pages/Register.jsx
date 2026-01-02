@@ -24,71 +24,82 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-sky-50 px-4 py-12">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50/50 via-pink-50/30 to-sky-50 px-4 py-12 relative overflow-hidden">
+            {/* Animated Background Elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-200/20 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-sky-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-gradient-to-br from-indigo-400/30 via-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse float"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-gradient-to-br from-sky-400/30 via-blue-400/20 to-indigo-400/20 rounded-full blur-3xl animate-pulse float" style={{ animationDelay: '2s' }}></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-purple-300/10 via-pink-300/10 to-indigo-300/10 rounded-full blur-3xl animate-pulse float" style={{ animationDelay: '4s' }}></div>
             </div>
 
-            <div className="max-w-md w-full glass rounded-3xl p-10 relative">
-                <Link to="/login" className="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 transition-colors text-xs font-bold uppercase tracking-wider mb-8 group">
+            <div className="max-w-md w-full glass-strong rounded-[2.5rem] p-10 relative transform transition-all duration-500 hover:scale-[1.02]">
+                <Link to="/login" className="inline-flex items-center gap-2 text-slate-600 hover:text-indigo-600 transition-all text-xs font-bold uppercase tracking-wider mb-8 group hover:scale-105">
                     <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-1" />
                     Back to login
                 </Link>
 
                 <div className="text-center mb-10">
-                    <div className="inline-flex items-center justify-center p-4 bg-indigo-600 rounded-2xl text-white shadow-xl shadow-indigo-200 mb-6 group transition-transform hover:scale-110">
-                        <UserPlus size={32} />
+                    <div className="inline-flex items-center justify-center p-5 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl text-white shadow-2xl shadow-indigo-500/50 mb-6 group transition-all duration-300 hover:scale-110 hover:rotate-6 pulse-glow">
+                        <UserPlus size={36} className="drop-shadow-lg" />
                     </div>
-                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Create Account</h1>
-                    <p className="mt-2 text-slate-500 text-sm">Join us and start your journey today</p>
+                    <h1 className="text-4xl font-black text-gradient tracking-tight mb-2">Create Account</h1>
+                    <p className="mt-2 text-slate-600 font-medium">Join us and start your journey today</p>
                 </div>
 
                 {error && (
-                    <div className="bg-rose-50 border border-rose-100 text-rose-600 px-4 py-3 rounded-xl mb-6 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-                        <span className="mt-0.5">•</span>
+                    <div className="bg-gradient-to-r from-rose-50 to-pink-50 border-2 border-rose-200/60 text-rose-700 px-5 py-4 rounded-2xl mb-6 text-sm font-medium flex items-start gap-3 animate-in fade-in slide-in-from-top-2 shadow-lg shadow-rose-100/50">
+                        <span className="mt-0.5 text-rose-500 font-bold">⚠</span>
                         {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">Username</label>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1 flex items-center gap-2">
+                            <User size={14} className="text-indigo-500" />
+                            Username
+                        </label>
                         <div className="relative group">
-                            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                            <User className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-all duration-300 group-focus-within:scale-110" size={20} />
                             <input
                                 type="text"
                                 required
                                 placeholder="johndoe"
-                                className="input-field pl-12"
+                                className="input-field pl-14 pr-5"
                                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                             />
                         </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">Email Address</label>
+                    <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1 flex items-center gap-2">
+                            <Mail size={14} className="text-indigo-500" />
+                            Email Address
+                        </label>
                         <div className="relative group">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                            <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-all duration-300 group-focus-within:scale-110" size={20} />
                             <input
                                 type="email"
                                 required
                                 placeholder="name@company.com"
-                                className="input-field pl-12"
+                                className="input-field pl-14 pr-5"
                                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             />
                         </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1">Password</label>
+                    <div className="space-y-2">
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider ml-1 flex items-center gap-2">
+                            <Lock size={14} className="text-indigo-500" />
+                            Password
+                        </label>
                         <div className="relative group">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+                            <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-all duration-300 group-focus-within:scale-110" size={20} />
                             <input
                                 type="password"
                                 required
                                 placeholder="••••••••"
-                                className="input-field pl-12"
+                                className="input-field pl-14 pr-5"
                                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                             />
                         </div>
@@ -110,11 +121,11 @@ const Register = () => {
                     </button>
                 </form>
 
-                <div className="mt-8 text-center border-t border-slate-100 pt-8">
-                    <p className="text-slate-500 text-sm">
+                <div className="mt-8 text-center border-t border-slate-200/60 pt-8">
+                    <p className="text-slate-600 text-sm font-medium">
                         Already have an account?{' '}
-                        <Link to="/login" className="text-indigo-600 hover:text-indigo-700 font-bold decoration-2 underline-offset-4 hover:underline transition-all">
-                            Log in
+                        <Link to="/login" className="text-gradient font-bold decoration-2 underline-offset-4 hover:underline transition-all hover:scale-105 inline-block">
+                            Log in →
                         </Link>
                     </p>
                 </div>

@@ -23,15 +23,16 @@ const ReservationView = ({ onReserved }) => {
 
     if (success) {
         return (
-            <div className="text-center py-20 bg-white rounded-[3rem] border border-emerald-100 bg-emerald-50/20">
-                <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 text-white shadow-xl shadow-emerald-100">
-                    <Check size={40} />
+            <div className="text-center py-32 bg-white/50 backdrop-blur-sm rounded-[4rem] border-2 border-emerald-100 shadow-2xl shadow-emerald-100/20 max-w-2xl mx-auto">
+                <div className="w-24 h-24 bg-emerald-500 rounded-[2rem] flex items-center justify-center mx-auto mb-8 text-white shadow-2xl shadow-emerald-500/20 transform rotate-12">
+                    <Check size={48} />
                 </div>
-                <h3 className="text-2xl font-black text-slate-900 mb-2">Miiska waa kuu xiran yahay!</h3>
-                <p className="text-slate-500 font-medium max-w-xs mx-auto">Waa laguugu daray booskaaga, si farxad leh noogu imow.</p>
+                <h3 className="text-3xl font-black text-slate-900 mb-2 tracking-tighter">SUCCESSFUL!</h3>
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-[11px] mb-8">Miiska waa kuu xiran yahay!</p>
+                <p className="text-slate-500 font-medium max-w-xs mx-auto italic px-6">Waa laguugu daray booskaaga, si farxad leh noogu imow.</p>
                 <button
                     onClick={() => setSuccess(false)}
-                    className="mt-8 text-indigo-600 font-black text-sm uppercase tracking-widest hover:underline"
+                    className="mt-12 bg-white text-emerald-600 px-10 py-4 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-emerald-50 transition-all shadow-xl shadow-emerald-100"
                 >
                     Samayso mid kale
                 </button>
@@ -40,46 +41,52 @@ const ReservationView = ({ onReserved }) => {
     }
 
     return (
-        <div className="bg-white rounded-[3rem] p-8 lg:p-12 border border-slate-100 shadow-sm max-w-2xl mx-auto">
-            <h2 className="text-3xl font-black text-slate-900 mb-8 tracking-tight">Qabso Miis (Book a Table)</h2>
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-1">Taariikhda (Date)</label>
-                        <div className="relative">
-                            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+        <div className="bg-white rounded-[4rem] p-12 lg:p-20 border border-slate-100 shadow-2xl shadow-slate-200/50 max-w-3xl mx-auto relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-600 via-orange-400 to-orange-600" />
+
+            <div className="mb-12">
+                <h2 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">Book a Table</h2>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Reserve your premium dining spot</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="space-y-3">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Desired Date</label>
+                        <div className="relative group">
+                            <Calendar className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors" size={20} />
                             <input
                                 required
                                 type="date"
                                 value={formData.reservation_date}
                                 onChange={e => setFormData({ ...formData, reservation_date: e.target.value })}
-                                className="w-full bg-slate-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-orange-500/20 outline-none transition-all font-bold"
+                                className="w-full bg-slate-50 border border-slate-100 rounded-[2rem] py-5 pl-16 pr-6 focus:bg-white focus:ring-4 focus:ring-orange-500/5 focus:border-orange-200 outline-none transition-all duration-300 font-black text-slate-900"
                             />
                         </div>
                     </div>
-                    <div className="space-y-2">
-                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-1">Waqtiga (Time)</label>
-                        <div className="relative">
-                            <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                    <div className="space-y-3">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Preferred Time</label>
+                        <div className="relative group">
+                            <Clock className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors" size={20} />
                             <input
                                 required
                                 type="time"
                                 value={formData.reservation_time}
                                 onChange={e => setFormData({ ...formData, reservation_time: e.target.value })}
-                                className="w-full bg-slate-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-orange-500/20 outline-none transition-all font-bold"
+                                className="w-full bg-slate-50 border border-slate-100 rounded-[2rem] py-5 pl-16 pr-6 focus:bg-white focus:ring-4 focus:ring-orange-500/5 focus:border-orange-200 outline-none transition-all duration-300 font-black text-slate-900"
                             />
                         </div>
                     </div>
                 </div>
 
-                <div className="space-y-2">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-1">Tirada Dadka (Guests)</label>
-                    <div className="relative">
-                        <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] ml-1">Total Guests</label>
+                    <div className="relative group">
+                        <Users className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors" size={20} />
                         <select
                             value={formData.number_of_guests}
                             onChange={e => setFormData({ ...formData, number_of_guests: Number(e.target.value) })}
-                            className="w-full bg-slate-50 border-none rounded-2xl py-4 pl-12 pr-4 focus:ring-2 focus:ring-orange-500/20 outline-none transition-all font-bold appearance-none"
+                            className="w-full bg-slate-50 border border-slate-100 rounded-[2rem] py-5 pl-16 pr-10 focus:bg-white focus:ring-4 focus:ring-orange-500/5 focus:border-orange-200 outline-none transition-all duration-300 font-black text-slate-900 appearance-none cursor-pointer"
                         >
                             {[1, 2, 3, 4, 5, 6, 7, 8].map(n => (
                                 <option key={n} value={n}>{n} Guest{n > 1 ? 's' : ''}</option>
@@ -90,9 +97,10 @@ const ReservationView = ({ onReserved }) => {
 
                 <button
                     type="submit"
-                    className="w-full bg-orange-500 text-white py-5 rounded-[2rem] font-black text-lg hover:bg-orange-600 shadow-xl shadow-orange-100 transition-all active:scale-[0.98] mt-4"
+                    className="w-full bg-orange-600 text-white py-7 rounded-[2.5rem] font-black text-xl hover:bg-orange-700 shadow-2xl shadow-orange-600/30 transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-3 group/btn mt-4"
                 >
-                    Confirm Reservation
+                    Confirm My Table
+                    <Check className="group-hover/btn:scale-125 transition-transform" />
                 </button>
             </form>
         </div>

@@ -58,13 +58,15 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 flex">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/20 to-purple-50/20 flex">
             {/* Sidebar - Desktop */}
-            <aside className="hidden lg:flex w-72 flex-col bg-white border-r border-slate-200">
-                <div className="p-8">
-                    <div className="flex items-center gap-3 text-indigo-600">
-                        <ShieldCheck size={32} />
-                        <span className="text-xl font-black tracking-tight text-slate-900">Karaama Admin</span>
+            <aside className="hidden lg:flex w-72 flex-col bg-white/90 backdrop-blur-xl border-r border-white/60 shadow-2xl shadow-indigo-100/30">
+                <div className="p-8 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-br-3xl">
+                    <div className="flex items-center gap-3 text-white">
+                        <div className="p-2 bg-white/20 backdrop-blur-sm rounded-xl">
+                            <ShieldCheck size={28} className="drop-shadow-lg" />
+                        </div>
+                        <span className="text-xl font-black tracking-tight drop-shadow-lg">Karaama Admin</span>
                     </div>
                 </div>
 
@@ -85,21 +87,22 @@ const Dashboard = () => {
                         <button
                             key={item.id}
                             onClick={() => setActiveSection(item.id)}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all duration-200 ${activeSection === item.id
-                                ? 'bg-indigo-50 text-indigo-600 shadow-sm shadow-indigo-100'
-                                : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
-                                }`}
+                            className={`w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl font-bold transition-all duration-300 group ${
+                                activeSection === item.id
+                                    ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white shadow-xl shadow-indigo-500/40 transform scale-105'
+                                    : 'text-slate-600 hover:bg-gradient-to-r hover:from-indigo-50 hover:via-purple-50 hover:to-pink-50 hover:text-indigo-700 hover:shadow-lg hover:scale-105'
+                            }`}
                         >
-                            <item.icon size={20} />
+                            <item.icon size={20} className={`transition-transform duration-300 ${activeSection === item.id ? 'scale-110' : 'group-hover:scale-110'}`} />
                             {item.label}
                         </button>
                     ))}
                 </nav>
 
-                <div className="p-4 border-t border-slate-100">
+                <div className="p-4 border-t border-slate-200/60 bg-gradient-to-t from-slate-50/50 to-transparent">
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-600 font-bold hover:bg-rose-50 transition-colors group"
+                        className="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl text-white font-bold bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 hover:from-rose-600 hover:via-pink-600 hover:to-rose-700 transition-all duration-300 shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/50 hover:scale-105 group"
                     >
                         <LogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
                         Sign Out
@@ -110,13 +113,13 @@ const Dashboard = () => {
             {/* Main Content */}
             <div className="flex-1 flex flex-col">
                 {/* Header */}
-                <header className="h-20 bg-white border-b border-slate-200 px-6 lg:px-10 flex items-center justify-between sticky top-0 z-10">
+                <header className="h-20 bg-white/90 backdrop-blur-xl border-b border-white/60 shadow-lg shadow-indigo-100/20 px-6 lg:px-10 flex items-center justify-between sticky top-0 z-10">
                     <div className="relative group max-w-md w-full hidden md:block">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
                         <input
                             type="text"
                             placeholder="Search anything..."
-                            className="w-full bg-slate-50 border-none rounded-2xl py-2.5 pl-12 pr-4 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all placeholder:text-slate-400"
+                            className="w-full bg-white/80 backdrop-blur-sm border-2 border-slate-200/60 rounded-2xl py-3 pl-12 pr-4 focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all duration-300 placeholder:text-slate-400 hover:border-indigo-300 shadow-sm"
                         />
                     </div>
                     <div className="lg:hidden flex items-center gap-2">
@@ -125,17 +128,17 @@ const Dashboard = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button className="p-2.5 bg-slate-50 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all relative">
-                            <Bell size={20} />
-                            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
+                        <button className="p-3 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl text-slate-600 hover:text-indigo-600 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300 relative shadow-md hover:shadow-lg hover:scale-110 group">
+                            <Bell size={20} className="group-hover:animate-pulse" />
+                            <span className="absolute top-2 right-2 w-3 h-3 bg-gradient-to-r from-rose-500 to-pink-500 rounded-full border-2 border-white shadow-lg animate-pulse"></span>
                         </button>
-                        <div className="w-px h-6 bg-slate-200 mx-1"></div>
+                        <div className="w-px h-8 bg-gradient-to-b from-transparent via-slate-300 to-transparent mx-1"></div>
                         <div className="flex items-center gap-3 pl-1">
                             <div className="text-right hidden sm:block">
-                                <p className="text-sm font-bold text-slate-900 leading-none">{user.username}</p>
-                                <p className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-tighter">Gold Tier Member</p>
+                                <p className="text-sm font-black text-slate-900 leading-none">{user.username}</p>
+                                <p className="text-xs font-bold text-gradient mt-1 uppercase tracking-tighter">Premium Admin</p>
                             </div>
-                            <div className="w-10 h-10 bg-gradient-to-tr from-indigo-600 to-indigo-400 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-100">
+                            <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl flex items-center justify-center text-white font-black shadow-xl shadow-indigo-500/40 hover:scale-110 transition-transform duration-300 pulse-glow">
                                 {user.username.charAt(0).toUpperCase()}
                             </div>
                         </div>
