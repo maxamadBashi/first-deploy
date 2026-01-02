@@ -6,7 +6,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 // --- Public Menu ---
 router.get('/menu', async (req, res) => {
     try {
-        const categories = await db.query('SELECT * FROM categories WHERE is_visible = TRUE ORDER BY sort_order ASC');
+        const categories = await db.query('SELECT * FROM categories WHERE is_visible = TRUE ORDER BY CASE WHEN sort_order = 0 THEN 999 ELSE sort_order END ASC, name ASC');
         const items = await db.query('SELECT * FROM menu_items WHERE availability = TRUE');
 
         res.json({

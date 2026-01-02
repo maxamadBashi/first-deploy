@@ -100,7 +100,7 @@ router.get('/stats', authMiddleware, isAdmin, async (req, res) => {
 // --- Menu Management ---
 router.get('/menu', authMiddleware, isAdmin, async (req, res) => {
     try {
-        const categories = await db.query('SELECT * FROM categories ORDER BY sort_order ASC');
+        const categories = await db.query('SELECT * FROM categories ORDER BY CASE WHEN sort_order = 0 THEN 999 ELSE sort_order END ASC, name ASC');
         const items = await db.query(`
             SELECT *, availability as is_available, discount_percentage as discount 
             FROM menu_items

@@ -7,8 +7,8 @@ const CategoryTabs = ({ categories, activeCategory, onCategoryChange }) => {
                 <button
                     onClick={() => onCategoryChange(null)}
                     className={`whitespace-nowrap px-6 py-2.5 rounded-2xl font-bold text-sm transition-all duration-300 ${activeCategory === null
-                            ? 'bg-orange-500 text-white shadow-lg shadow-orange-200 lg:scale-105'
-                            : 'bg-orange-50 text-orange-600 hover:bg-orange-100'
+                        ? 'bg-orange-500 text-white shadow-lg shadow-orange-200 lg:scale-105'
+                        : 'bg-orange-50 text-orange-600 hover:bg-orange-100'
                         }`}
                 >
                     All items
@@ -18,8 +18,8 @@ const CategoryTabs = ({ categories, activeCategory, onCategoryChange }) => {
                         key={cat.id}
                         onClick={() => onCategoryChange(cat.id)}
                         className={`whitespace-nowrap px-6 py-2.5 rounded-2xl font-bold text-sm transition-all duration-300 ${activeCategory === cat.id
-                                ? 'bg-orange-500 text-white shadow-lg shadow-orange-200 lg:scale-105'
-                                : 'bg-orange-50 text-orange-600 hover:bg-orange-100'
+                            ? 'bg-orange-500 text-white shadow-lg shadow-orange-200 lg:scale-105'
+                            : 'bg-orange-50 text-orange-600 hover:bg-orange-100'
                             }`}
                     >
                         {cat.name}
