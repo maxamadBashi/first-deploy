@@ -1,13 +1,21 @@
 import React from 'react';
 import { Flame, Star, Clock, Plus } from 'lucide-react';
+import API from '../../api';
 
 const FoodCard = ({ item, onAddToCart }) => {
+    const getFullImageUrl = (url) => {
+        if (!url) return null;
+        if (url.startsWith('http')) return url;
+        const baseUrl = API.defaults.baseURL.replace('/api', '');
+        return `${baseUrl}${url}`;
+    };
+
     return (
         <div className="bg-white rounded-[2.5rem] p-4 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
             <div className="relative aspect-square rounded-[2rem] overflow-hidden bg-slate-50 mb-4">
                 {item.image_url ? (
                     <img
-                        src={item.image_url}
+                        src={getFullImageUrl(item.image_url)}
                         alt={item.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />

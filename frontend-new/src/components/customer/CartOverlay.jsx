@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ShoppingCart, ChevronRight, Plus, Minus, X, Trash2, ArrowLeft } from 'lucide-react';
+import API from '../../api';
+
 
 const CartOverlay = ({ cart, onCheckout, onUpdateQuantity, onRemoveItem }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -7,6 +9,14 @@ const CartOverlay = ({ cart, onCheckout, onUpdateQuantity, onRemoveItem }) => {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
 
     if (count === 0) return null;
+
+    const getFullImageUrl = (url) => {
+        if (!url) return null;
+        if (url.startsWith('http')) return url;
+        const baseUrl = API.defaults.baseURL.replace('/api', '');
+        return `${baseUrl}${url}`;
+    };
+
 
     return (
         <>
@@ -35,7 +45,7 @@ const CartOverlay = ({ cart, onCheckout, onUpdateQuantity, onRemoveItem }) => {
                         {cart.map((item) => (
                             <div key={item.id} className="flex items-center gap-4 p-4 bg-slate-50 rounded-[2rem] border border-slate-100">
                                 <div className="w-16 h-16 bg-white rounded-2xl overflow-hidden shadow-sm">
-                                    <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                                    <img src={getFullImageUrl(item.image_url)} alt={item.name} className="w-full h-full object-cover" />
                                 </div>
                                 <div className="flex-1">
                                     <h4 className="font-black text-slate-900 uppercase tracking-tight text-sm">{item.name}</h4>

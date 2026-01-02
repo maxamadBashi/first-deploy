@@ -4,6 +4,26 @@ const db = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
 const multer = require('multer');
 const path = require('path');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Configure Cloudinary Storage
+const cloudinaryStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'karaama_restaurant',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+        public_id: (req, file) => Date.now() + '-' + path.parse(file.originalname).name
+    }
+});
+
 
 // Configure Multer for image uploads
 const storage = multer.diskStorage({
@@ -16,7 +36,9 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({
-    storage: storage,
+    storage: (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_CLOUD_NAME !== 'youdetail')
+        ? cloudinaryStorage
+        : storage,
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
     fileFilter: (req, file, cb) => {
         const filetypes = /jpeg|jpg|png|webp/;
@@ -126,8 +148,8 @@ router.post('/menu-items', authMiddleware, isAdmin, upload.single('image'), asyn
 
         let image_url = req.body.image_url || '';
         if (req.file) {
-            const baseUrl = process.env.VITE_API_URL ? process.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000';
-            image_url = `${baseUrl}/uploads/${req.file.filename}`;
+            // Cloudinary provides 'path' or 'secure_url'
+            image_url = req.file.path || req.file.secure_url || `/uploads/${req.file.filename}`;
         }
 
         const result = await db.query(
@@ -159,8 +181,8 @@ router.patch('/menu-items/:id', authMiddleware, isAdmin, upload.single('image'),
 
         let image_url;
         if (req.file) {
-            const baseUrl = process.env.VITE_API_URL ? process.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000';
-            image_url = `${baseUrl}/uploads/${req.file.filename}`;
+            // Cloudinary provides 'path' or 'secure_url'
+            image_url = req.file.path || req.file.secure_url || `/uploads/${req.file.filename}`;
         }
 
         const result = await db.query(

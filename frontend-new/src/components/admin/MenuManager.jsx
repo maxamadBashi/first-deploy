@@ -37,6 +37,13 @@ const MenuManager = () => {
         }
     };
 
+    const getFullImageUrl = (url) => {
+        if (!url) return null;
+        if (url.startsWith('http')) return url;
+        const baseUrl = API.defaults.baseURL.replace('/api', '');
+        return `${baseUrl}${url}`;
+    };
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -114,7 +121,7 @@ const MenuManager = () => {
 
     const openEditModal = (item) => {
         setEditItem({ ...item, category_id: categories.find(c => c.name === item.category)?.id || '' });
-        setPreview(item.image_url);
+        setPreview(getFullImageUrl(item.image_url));
         setShowEditModal(true);
     };
 
@@ -180,7 +187,7 @@ const MenuManager = () => {
                     <div key={item.id} className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-300">
                         <div className="h-48 bg-slate-100 relative">
                             {item.image_url ? (
-                                <img src={item.image_url} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                <img src={getFullImageUrl(item.image_url)} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-slate-300">
                                     <ImageIcon size={48} />
@@ -321,7 +328,7 @@ const MenuManager = () => {
                                     <div className="flex items-center gap-4">
                                         {(preview || editItem.image_url) && (
                                             <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200">
-                                                <img src={preview || editItem.image_url} alt="Preview" className="w-full h-full object-cover" />
+                                                <img src={preview || getFullImageUrl(editItem.image_url)} alt="Preview" className="w-full h-full object-cover" />
                                             </div>
                                         )}
                                         <div className="flex-1">
