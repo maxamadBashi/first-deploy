@@ -143,28 +143,21 @@ router.delete('/categories/:id', authMiddleware, isAdmin, async (req, res) => {
     }
 });
 
-console.log('--- ENTERING POST /menu-items ---');
 router.post('/menu-items', authMiddleware, isAdmin, upload.single('image'), async (req, res) => {
-    console.log('Inside POST /menu-items handler');
     const { category_id, name, description, price, discount } = req.body;
-    console.log('Body:', { category_id, name, price });
-    console.log('File:', req.file ? 'Attached' : 'None');
 
     try {
         let categoryName = 'Uncategorized';
 
         if (category_id && !isNaN(parseInt(category_id))) {
-            console.log('Fetching category name for ID:', category_id);
             const catRes = await db.query('SELECT name FROM categories WHERE id = $1', [parseInt(category_id)]);
             if (catRes.rows.length > 0) {
                 categoryName = catRes.rows[0].name;
             }
-            console.log('Category name detected:', categoryName);
         }
 
         let image_url = req.body.image_url || '';
         if (req.file) {
-            console.log('File metadata:', req.file);
             // If it's a Cloudinary URL, it will start with http
             if (req.file.path && req.file.path.startsWith('http')) {
                 image_url = req.file.path;
@@ -172,7 +165,6 @@ router.post('/menu-items', authMiddleware, isAdmin, upload.single('image'), asyn
                 image_url = `/uploads/${req.file.filename}`;
             }
         }
-        console.log('Final image_url to save:', image_url);
 
         const result = await db.query(
             'INSERT INTO menu_items (category, name, description, price, image_url, discount_percentage) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
@@ -207,7 +199,6 @@ router.patch('/menu-items/:id', authMiddleware, isAdmin, upload.single('image'),
 
         let image_url;
         if (req.file) {
-            console.log('File metadata (patch):', req.file);
             if (req.file.path && req.file.path.startsWith('http')) {
                 image_url = req.file.path;
             } else {

@@ -28,7 +28,10 @@ const CategoryManager = () => {
     const handleAdd = async (e) => {
         e.preventDefault();
         try {
-            await API.post('/admin/categories', newCategory);
+            await API.post('/admin/categories', {
+                ...newCategory,
+                sort_order: parseInt(newCategory.sort_order) || 0
+            });
             setNewCategory({ name: '', sort_order: 0 });
             setShowAdd(false);
             fetchCategories();
@@ -40,7 +43,10 @@ const CategoryManager = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            await API.patch(`/admin/categories/${editingCategory.id}`, editingCategory);
+            await API.patch(`/admin/categories/${editingCategory.id}`, {
+                ...editingCategory,
+                sort_order: parseInt(editingCategory.sort_order) || 0
+            });
             setEditingCategory(null);
             fetchCategories();
         } catch (err) {
@@ -96,8 +102,9 @@ const CategoryManager = () => {
                             <input required type="text" value={newCategory.name} onChange={e => setNewCategory({ ...newCategory, name: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="e.g. Fast Food" />
                         </div>
                         <div className="w-24 space-y-1">
-                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Sort</label>
+                            <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Order</label>
                             <input type="number" value={newCategory.sort_order} onChange={e => setNewCategory({ ...newCategory, sort_order: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none" />
+                            <p className="text-[9px] text-slate-400 font-bold">(1 is first)</p>
                         </div>
                         <div className="flex gap-2">
                             <button type="submit" className="bg-indigo-600 text-white p-3 rounded-xl hover:bg-indigo-700 transition-all"><Check /></button>
