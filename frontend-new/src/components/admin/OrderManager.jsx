@@ -84,9 +84,25 @@ const OrderManager = () => {
                                         <span className="font-black text-slate-900">#{order.id}</span>
                                     </td>
                                     <td className="px-8 py-6">
-                                        <div className="flex flex-col">
-                                            <span className="font-bold text-slate-800">{order.customer_name || 'Guest'}</span>
-                                            <span className="text-xs text-slate-400 font-medium">{order.table_number ? `Table ${order.table_number}` : order.order_type}</span>
+                                        <div className="flex flex-col gap-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-black text-slate-900">{order.customer_name || 'Guest'}</span>
+                                                <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-tight ${order.order_type === 'Delivery' ? 'bg-orange-50 text-orange-600' :
+                                                        order.order_type === 'Takeaway' ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-500'
+                                                    }`}>
+                                                    {order.order_type === 'Dine-in' ? 'Fadhi' : order.order_type === 'Takeaway' ? 'Kaxaysi' : 'Delivery'}
+                                                </span>
+                                            </div>
+                                            {order.table_number && (
+                                                <span className="text-xs text-indigo-500 font-bold flex items-center gap-1">
+                                                    <Coffee size={12} /> Table {order.table_number}
+                                                </span>
+                                            )}
+                                            {order.order_type === 'Delivery' && order.address && (
+                                                <span className="text-xs text-slate-400 font-medium flex items-center gap-1 mt-1 max-w-[200px] leading-tight">
+                                                    <Truck size={12} className="shrink-0" /> {order.address}
+                                                </span>
+                                            )}
                                         </div>
                                     </td>
                                     <td className="px-8 py-6">

@@ -18,6 +18,8 @@ const MenuManager = () => {
     });
     const [imageFile, setImageFile] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
 
     useEffect(() => {
         fetchData();
@@ -116,6 +118,18 @@ const MenuManager = () => {
         setShowEditModal(true);
     };
 
+    const filteredItems = items.filter(item => {
+        const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()));
+
+        const itemCategoryName = item.category ? item.category.toLowerCase().trim() : '';
+        const selectedCategoryName = categories.find(c => c.id.toString() === selectedCategory.toString())?.name.toLowerCase().trim() || '';
+
+        const matchesCategory = selectedCategory === '' || itemCategoryName === selectedCategoryName;
+
+        return matchesSearch && matchesCategory;
+    });
+
     if (loading) return <div className="text-center py-20 animate-pulse">Loading menu...</div>;
 
     return (
@@ -141,11 +155,17 @@ const MenuManager = () => {
                     <input
                         type="text"
                         placeholder="Search for food..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full bg-slate-50 border-none rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
                     />
                 </div>
                 <div className="flex gap-2">
-                    <select className="bg-slate-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all font-semibold text-slate-600">
+                    <select
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="bg-slate-50 border-none rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all font-semibold text-slate-600"
+                    >
                         <option value="">All Categories</option>
                         {categories.map(cat => (
                             <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -156,7 +176,7 @@ const MenuManager = () => {
 
             {/* Menu Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {items.map((item) => (
+                {filteredItems.map((item) => (
                     <div key={item.id} className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden shadow-sm group hover:shadow-xl transition-all duration-300">
                         <div className="h-48 bg-slate-100 relative">
                             {item.image_url ? (
