@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../api';
-import { UserPlus, Mail, Phone, Shield, MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { UserPlus, Mail, Phone, Shield, MoreVertical, Edit2, Trash2, X } from 'lucide-react';
 
 const StaffManager = () => {
     const [staff, setStaff] = useState([]);
@@ -115,8 +115,8 @@ const StaffManager = () => {
                         </div>
 
                         <div className="mt-8 flex gap-2">
-                            <button className="flex-1 bg-slate-50 hover:bg-slate-100 text-slate-600 py-3 rounded-xl font-bold text-sm transition-all">Edit</button>
-                            <button className="px-3 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-100 transition-all">
+                            <button onClick={() => { setEditStaff({ ...member, password: '' }); setShowEditModal(true); }} className="flex-1 bg-slate-50 hover:bg-slate-100 text-slate-600 py-3 rounded-xl font-bold text-sm transition-all">Edit</button>
+                            <button onClick={() => handleDelete(member.id)} className="px-3 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-100 transition-all">
                                 <Trash2 size={18} />
                             </button>
                         </div>
@@ -155,6 +155,49 @@ const StaffManager = () => {
                                 Save Staff Member
                             </button>
                             <button type="button" onClick={() => setShowAdd(false)} className="w-full py-3 text-slate-400 font-bold hover:text-slate-600">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {showEditModal && editStaff && (
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-2xl font-black text-slate-900">Wax ka badal Shaqaalaha</h3>
+                            <button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-slate-600"><X /></button>
+                        </div>
+                        <form onSubmit={handleUpdate} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Username</label>
+                                    <input required type="text" value={editStaff.username} onChange={e => setEditStaff({ ...editStaff, username: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="magaca" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Role</label>
+                                    <select value={editStaff.role} onChange={e => setEditStaff({ ...editStaff, role: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none font-bold">
+                                        <option value="staff">Staff</option>
+                                        <option value="manager">Manager</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Email Address</label>
+                                <input required type="email" value={editStaff.email} onChange={e => setEditStaff({ ...editStaff, email: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="email@example.com" />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Phone</label>
+                                <input type="text" value={editStaff.phone || ''} onChange={e => setEditStaff({ ...editStaff, phone: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="phone number" />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">New Password (leave blank to keep current)</label>
+                                <input type="password" value={editStaff.password || ''} onChange={e => setEditStaff({ ...editStaff, password: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="••••••••" />
+                            </div>
+                            <button type="submit" className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 mt-4">
+                                Update Staff Member
+                            </button>
+                            <button type="button" onClick={() => setShowEditModal(false)} className="w-full py-3 text-slate-400 font-bold hover:text-slate-600">Cancel</button>
                         </form>
                     </div>
                 </div>

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../api';
-import { Package, AlertCircle, Plus, ArrowUpRight, ArrowDownRight, Database } from 'lucide-react';
+import { Package, AlertCircle, Plus, ArrowUpRight, ArrowDownRight, Database, Edit2, Trash2, X } from 'lucide-react';
 
 const InventoryManager = () => {
     const [inventory, setInventory] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [showAdd, setShowAdd] = useState(false);
-    const [newItem, setNewItem] = useState({ item_name: '', quantity: 0, unit: 'kg', low_stock_threshold: 5 });
+    const [newItem, setNewItem] = useState({ item_name: '', quantity: 0, unit: 'kg', min_stock_level: 5 });
+    const [editItem, setEditItem] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
 
     useEffect(() => {
         fetchInventory();
@@ -28,7 +29,40 @@ const InventoryManager = () => {
         try {
             await API.post('/admin/inventory', newItem);
             setShowAdd(false);
-            setNewItem({ item_name: '', quantity: 0, unit: 'kg', low_stock_threshold: 5 });
+            setNewItem({ item_name: '', quantity: 0, unit: 'kg', min_stock_level: 5 });
+            fetchInventory();
+        } catch (err) {
+            alert('Error: ' + err.message);
+        }
+    };
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        try {
+            await API.patch(`/admin/inventory/${editItem.id}`, editItem);
+            setShowEditModal(false);
+            setEditItem(null);
+            fetchInventory();
+        } catch (err) {
+            alert('Error: ' + err.message);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Ma huba dhalista alaabtan?')) {
+            try {
+                await API.delete(`/admin/inventory/${id}`);
+                fetchInventory();
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+    };
+
+    const handleQuickUpdate = async (item, change) => {
+        try {
+            const newQuantity = Math.max(0, Number(item.quantity) + change);
+            await API.patch(`/admin/inventory/${item.id}`, { ...item, quantity: newQuantity });
             fetchInventory();
         } catch (err) {
             alert('Error: ' + err.message);
@@ -55,9 +89,13 @@ const InventoryManager = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {inventory.map((item) => {
-                    const isLow = Number(item.quantity) <= Number(item.low_stock_threshold);
+                    const isLow = Number(item.quantity) <= Number(item.min_stock_level);
                     return (
-                        <div key={item.id} className={`bg-white rounded-[2rem] border p-6 shadow-sm group hover:shadow-md transition-all ${isLow ? 'border-rose-200 bg-rose-50/20' : 'border-slate-200'}`}>
+                        <div key={item.id} className={`bg-white rounded-[2rem] border p-6 shadow-sm group hover:shadow-md transition-all relative overflow-hidden ${isLow ? 'border-rose-200 bg-rose-50/20' : 'border-slate-200'}`}>
+                            <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onClick={() => { setEditItem(item); setShowEditModal(true); }} className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"><Edit2 size={16} /></button>
+                                <button onClick={() => handleDelete(item.id)} className="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-all"><Trash2 size={16} /></button>
+                            </div>
                             <div className="flex justify-between items-start mb-6">
                                 <div className={`p-3 rounded-2xl ${isLow ? 'bg-rose-100 text-rose-600' : 'bg-indigo-50 text-indigo-600'}`}>
                                     <Package size={24} />
@@ -74,8 +112,8 @@ const InventoryManager = () => {
                                 <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">{item.unit}</span>
                             </div>
                             <div className="mt-6 pt-6 border-t border-slate-100 flex justify-between gap-2">
-                                <button className="flex-1 bg-emerald-50 text-emerald-600 p-2 rounded-xl hover:bg-emerald-100 transition-colors"><ArrowUpRight size={20} className="mx-auto" /></button>
-                                <button className="flex-1 bg-rose-50 text-rose-600 p-2 rounded-xl hover:bg-rose-100 transition-colors"><ArrowDownRight size={20} className="mx-auto" /></button>
+                                <button onClick={() => handleQuickUpdate(item, 1)} className="flex-1 bg-emerald-50 text-emerald-600 p-2 rounded-xl hover:bg-emerald-100 transition-colors"><ArrowUpRight size={20} className="mx-auto" /></button>
+                                <button onClick={() => handleQuickUpdate(item, -1)} className="flex-1 bg-rose-50 text-rose-600 p-2 rounded-xl hover:bg-rose-100 transition-colors"><ArrowDownRight size={20} className="mx-auto" /></button>
                             </div>
                         </div>
                     );
@@ -106,10 +144,54 @@ const InventoryManager = () => {
                                     </select>
                                 </div>
                             </div>
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Low Stock Alert Level</label>
+                                <input required type="number" step="0.1" value={newItem.min_stock_level} onChange={e => setNewItem({ ...newItem, min_stock_level: Number(e.target.value) })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none" />
+                            </div>
                             <button type="submit" className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 mt-4">
                                 Save Inventory Item
                             </button>
                             <button type="button" onClick={() => setShowAdd(false)} className="w-full py-3 text-slate-400 font-bold hover:text-slate-600">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {showEditModal && editItem && (
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-[2.5rem] w-full max-w-sm p-8 shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-2xl font-black text-slate-900">Wax ka badal Alaabta</h3>
+                            <button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-slate-600"><X /></button>
+                        </div>
+                        <form onSubmit={handleUpdate} className="space-y-4">
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Item Name</label>
+                                <input required type="text" value={editItem.item_name} onChange={e => setEditItem({ ...editItem, item_name: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Quantity</label>
+                                    <input required type="number" step="0.1" value={editItem.quantity} onChange={e => setEditItem({ ...editItem, quantity: Number(e.target.value) })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none" />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Unit</label>
+                                    <select value={editItem.unit} onChange={e => setEditItem({ ...editItem, unit: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none font-bold">
+                                        <option value="kg">kg</option>
+                                        <option value="liters">liters</option>
+                                        <option value="pcs">pcs</option>
+                                        <option value="grams">grams</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Low Stock Alert Level</label>
+                                <input required type="number" step="0.1" value={editItem.min_stock_level} onChange={e => setEditItem({ ...editItem, min_stock_level: Number(e.target.value) })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none" />
+                            </div>
+                            <button type="submit" className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 mt-4">
+                                Update Inventory Item
+                            </button>
+                            <button type="button" onClick={() => setShowEditModal(false)} className="w-full py-3 text-slate-400 font-bold hover:text-slate-600">Cancel</button>
                         </form>
                     </div>
                 </div>
