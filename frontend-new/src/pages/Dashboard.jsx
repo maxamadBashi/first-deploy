@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api';
-import { LogOut, User as UserIcon, Settings as SettingsIcon, Bell, Search, LayoutGrid, ShieldCheck, Mail, ShoppingBag, Utensils, Layers, Users, Truck, Database, CreditCard, BarChart, Tag, MessageSquare, Info } from 'lucide-react';
+import { LogOut, User as UserIcon, Settings as SettingsIcon, Bell, Search, LayoutGrid, ShieldCheck, Mail, ShoppingBag, Utensils, Layers, Users, Truck, Database, CreditCard, BarChart, Tag, MessageSquare, Info, Calendar } from 'lucide-react';
 import Overview from '../components/admin/Overview';
 import MenuManager from '../components/admin/MenuManager';
 import CategoryManager from '../components/admin/CategoryManager';
@@ -9,7 +9,12 @@ import OrderManager from '../components/admin/OrderManager';
 import TableManager from '../components/admin/TableManager';
 import StaffManager from '../components/admin/StaffManager';
 import InventoryManager from '../components/admin/InventoryManager';
+import ReservationManager from '../components/admin/ReservationManager';
+import CustomerManager from '../components/admin/CustomerManager';
+import PaymentManager from '../components/admin/PaymentManager';
+import ReviewManager from '../components/admin/ReviewManager';
 import Settings from '../components/admin/Settings';
+import CustomerDashboard from './CustomerDashboard';
 
 const Dashboard = () => {
     const [user, setUser] = useState(null);
@@ -48,6 +53,10 @@ const Dashboard = () => {
         );
     }
 
+    if (user.role === 'customer') {
+        return <CustomerDashboard user={user} />;
+    }
+
     return (
         <div className="min-h-screen bg-slate-50 flex">
             {/* Sidebar - Desktop */}
@@ -55,7 +64,7 @@ const Dashboard = () => {
                 <div className="p-8">
                     <div className="flex items-center gap-3 text-indigo-600">
                         <ShieldCheck size={32} />
-                        <span className="text-xl font-black tracking-tight text-slate-900">SecureApp</span>
+                        <span className="text-xl font-black tracking-tight text-slate-900">Karaama Admin</span>
                     </div>
                 </div>
 
@@ -65,14 +74,12 @@ const Dashboard = () => {
                         { id: 'menu', icon: Utensils, label: 'Menu Management' },
                         { id: 'categories', icon: Layers, label: 'Categories' },
                         { id: 'orders', icon: ShoppingBag, label: 'Order Management' },
-                        { id: 'tables', icon: Database, label: 'Table Management' },
+                        { id: 'reservations', icon: Calendar, label: 'Table Bookings' },
                         { id: 'customers', icon: Users, label: 'Customers' },
-                        { id: 'staff', icon: Users, label: 'Staff Management' },
+                        { id: 'staff', icon: ShieldCheck, label: 'Staff Management' },
                         { id: 'inventory', icon: Database, label: 'Inventory' },
-                        { id: 'payments', icon: CreditCard, label: 'Payments' },
-                        { id: 'reports', icon: BarChart, label: 'Reports' },
-                        { id: 'offers', icon: Tag, label: 'Offers & Promos' },
-                        { id: 'feedback', icon: MessageSquare, label: 'Feedback' },
+                        { id: 'payments', icon: CreditCard, label: 'Finances' },
+                        { id: 'reviews', icon: MessageSquare, label: 'Feedback' },
                         { id: 'settings', icon: SettingsIcon, label: 'System Settings' },
                     ].map((item) => (
                         <button
@@ -114,7 +121,7 @@ const Dashboard = () => {
                     </div>
                     <div className="lg:hidden flex items-center gap-2">
                         <ShieldCheck size={28} className="text-indigo-600" />
-                        <span className="font-bold text-slate-900">SecureApp</span>
+                        <span className="font-bold text-slate-900">Karaama Admin</span>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -147,8 +154,12 @@ const Dashboard = () => {
                             case 'categories': return <CategoryManager />;
                             case 'orders': return <OrderManager />;
                             case 'tables': return <TableManager />;
+                            case 'reservations': return <ReservationManager />;
+                            case 'customers': return <CustomerManager />;
                             case 'staff': return <StaffManager />;
                             case 'inventory': return <InventoryManager />;
+                            case 'payments': return <PaymentManager />;
+                            case 'reviews': return <ReviewManager />;
                             case 'settings': return <Settings />;
                             default: return (
                                 <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[2rem] border border-slate-200 border-dashed">

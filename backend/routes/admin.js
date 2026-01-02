@@ -377,23 +377,78 @@ router.delete('/inventory/:id', authMiddleware, isAdmin, async (req, res) => {
     }
 });
 
-// --- Settings ---
-router.get('/settings', authMiddleware, isAdmin, async (req, res) => {
+// --- Reservation Management ---
+router.get('/reservations', authMiddleware, isAdmin, async (req, res) => {
     try {
-        const result = await db.query('SELECT * FROM settings');
-        const settings = {};
-        result.rows.forEach(row => settings[row.key] = row.value);
-        res.json(settings);
+        const result = await db.query(`
+            SELECT r.*, u.username as customer_name, u.phone as customer_phone, rt.table_number 
+            FROM reservations r
+            LEFT JOIN users u ON r.customer_id = u.id
+            LEFT JOIN restaurant_tables rt ON r.table_id = rt.id
+            ORDER BY r.reservation_date DESC, r.reservation_time DESC
+        `);
+        res.json(result.rows);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-router.post('/settings', authMiddleware, isAdmin, async (req, res) => {
-    const { key, value } = req.body;
+router.patch('/reservations/:id', authMiddleware, isAdmin, async (req, res) => {
+    const { status } = req.body;
     try {
-        await db.query('INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2', [key, value]);
-        res.json({ message: 'Settings updated' });
+        const result = await db.query('UPDATE reservations SET status = $1 WHERE id = $2 RETURNING *', [status, req.params.id]);
+        res.json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// --- Customer Management ---
+router.get('/customers', authMiddleware, isAdmin, async (req, res) => {
+    try {
+        const result = await db.query(`
+            SELECT u.id, u.username, u.email, u.phone, u.address, u.created_at,
+            (SELECT COUNT(*) FROM orders WHERE customer_id = u.id) as total_orders,
+            (SELECT SUM(total_amount) FROM orders WHERE customer_id = u.id) as total_spent
+            FROM users u
+            WHERE u.role = 'customer'
+            ORDER BY u.created_at DESC
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// --- Finance & Payments ---
+router.get('/payments', authMiddleware, isAdmin, async (req, res) => {
+    try {
+        const result = await db.query(`
+            SELECT o.id as order_id, o.total_amount, o.payment_status, o.created_at, u.username as customer_name
+            FROM orders o
+            LEFT JOIN users u ON o.customer_id = u.id
+            WHERE o.payment_status = 'Paid'
+            ORDER BY o.created_at DESC
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// --- Review Management ---
+router.get('/reviews', authMiddleware, isAdmin, async (req, res) => {
+    try {
+        const result = await db.query(`
+            SELECT r.*, u.username, mi.name as item_name
+            FROM reviews r
+            LEFT JOIN users u ON r.user_id = u.id
+            LEFT JOIN orders o ON r.order_id = o.id
+            LEFT JOIN order_items oi ON o.id = oi.order_id
+            LEFT JOIN menu_items mi ON oi.menu_item_id = mi.id
+            ORDER BY r.created_at DESC
+        `);
+        res.json(result.rows);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

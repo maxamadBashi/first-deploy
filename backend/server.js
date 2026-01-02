@@ -6,6 +6,7 @@ const fs = require('fs');
 const db = require('./db');
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
+const customerRoutes = require('./routes/customer');
 
 dotenv.config();
 
@@ -25,10 +26,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/customer', customerRoutes);
 
 // Root route
 app.get('/', (req, res) => {
-    res.send('Login System API (PostgreSQL) is running...');
+    res.send('Karaama Restaurant API is running...');
 });
 
 // Database initialization
@@ -49,9 +51,13 @@ const initDB = async () => {
                 password TEXT NOT NULL,
                 role VARCHAR(20) DEFAULT 'customer', -- admin, manager, staff, customer
                 phone VARCHAR(20),
+                address TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
+
+        // Add address to users if it doesn't exist
+        try { await db.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT"); } catch (e) { }
 
         // Categories table
         await db.query(`
@@ -99,11 +105,17 @@ const initDB = async () => {
                 total_amount DECIMAL(10, 2) NOT NULL,
                 status VARCHAR(20) DEFAULT 'Pending', -- Pending, Accepted, Preparing, Ready, Delivered, Cancelled
                 order_type VARCHAR(20) DEFAULT 'Dine-in', -- Dine-in, Takeaway, Delivery
+                address TEXT, -- For delivery orders
                 staff_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
                 payment_status VARCHAR(20) DEFAULT 'Unpaid',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
+
+        // Check and add address column if it doesn't exist (for existing tables)
+        try {
+            await db.query("ALTER TABLE orders ADD COLUMN IF NOT EXISTS address TEXT");
+        } catch (e) { /* ignore */ }
 
         // Order Items table
         await db.query(`
@@ -136,6 +148,20 @@ const initDB = async () => {
                 amount DECIMAL(10, 2) NOT NULL,
                 payment_method VARCHAR(50) NOT NULL, -- Cash, Mobile Money, Card
                 payment_status VARCHAR(20) DEFAULT 'Paid',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+
+        // Reservations table
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS reservations (
+                id SERIAL PRIMARY KEY,
+                customer_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+                table_id INTEGER REFERENCES restaurant_tables(id) ON DELETE SET NULL,
+                reservation_date DATE NOT NULL,
+                reservation_time TIME NOT NULL,
+                number_of_guests INTEGER NOT NULL,
+                status VARCHAR(20) DEFAULT 'Confirmed',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
