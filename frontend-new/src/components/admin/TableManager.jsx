@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../api';
-import { Plus, Users, Utensils, CheckCircle2, XCircle, MoreVertical } from 'lucide-react';
+import { Plus, Users, Utensils, CheckCircle2, XCircle, MoreVertical, Edit2, Trash2, X } from 'lucide-react';
 
 const TableManager = () => {
     const [tables, setTables] = useState([]);
@@ -23,6 +23,9 @@ const TableManager = () => {
         }
     };
 
+    const [editTable, setEditTable] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+
     const handleAdd = async (e) => {
         e.preventDefault();
         try {
@@ -32,6 +35,29 @@ const TableManager = () => {
             fetchTables();
         } catch (err) {
             alert('Error: ' + err.message);
+        }
+    };
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        try {
+            await API.patch(`/admin/tables/${editTable.id}`, editTable);
+            setShowEditModal(false);
+            setEditTable(null);
+            fetchTables();
+        } catch (err) {
+            alert('Error: ' + err.message);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Ma huba dhalista miiskan?')) {
+            try {
+                await API.delete(`/admin/tables/${id}`);
+                fetchTables();
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
         }
     };
 
@@ -65,6 +91,10 @@ const TableManager = () => {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 {tables.map((table) => (
                     <div key={table.id} className="bg-white rounded-[2rem] border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
+                        <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => { setEditTable(table); setShowEditModal(true); }} className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"><Edit2 size={16} /></button>
+                            <button onClick={() => handleDelete(table.id)} className="p-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-all"><Trash2 size={16} /></button>
+                        </div>
                         <div className="flex flex-col items-center text-center space-y-4">
                             <div className={`p-4 rounded-2xl ${getStatusColor(table.status).split(' ')[0]} ${getStatusColor(table.status).split(' ')[1]}`}>
                                 <Utensils size={32} />
@@ -100,6 +130,36 @@ const TableManager = () => {
                                 Save Table
                             </button>
                             <button type="button" onClick={() => setShowAddModal(false)} className="w-full py-3 text-slate-400 font-bold hover:text-slate-600">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {showEditModal && editTable && (
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-[2.5rem] w-full max-w-sm p-8 shadow-2xl animate-in zoom-in-95 duration-200">
+                        <h3 className="text-2xl font-black text-slate-900 mb-6">Wax ka badal Miiska</h3>
+                        <form onSubmit={handleUpdate} className="space-y-4">
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Table Number</label>
+                                <input required type="text" value={editTable.table_number} onChange={e => setEditTable({ ...editTable, table_number: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none" placeholder="e.g. 01" />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Capacity (Persons)</label>
+                                <input required type="number" value={editTable.capacity} onChange={e => setEditTable({ ...editTable, capacity: Number(e.target.value) })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none" />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Status</label>
+                                <select value={editTable.status} onChange={e => setEditTable({ ...editTable, status: e.target.value })} className="w-full bg-slate-50 border-none rounded-xl p-3 focus:ring-2 focus:ring-indigo-500/20 outline-none font-bold">
+                                    <option value="Available">Available</option>
+                                    <option value="Reserved">Reserved</option>
+                                    <option value="Occupied">Occupied</option>
+                                </select>
+                            </div>
+                            <button type="submit" className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-lg hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 mt-4">
+                                Update Table
+                            </button>
+                            <button type="button" onClick={() => setShowEditModal(false)} className="w-full py-3 text-slate-400 font-bold hover:text-slate-600">Cancel</button>
                         </form>
                     </div>
                 </div>

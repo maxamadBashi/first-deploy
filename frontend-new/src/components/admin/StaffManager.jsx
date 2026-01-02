@@ -25,6 +25,9 @@ const StaffManager = () => {
         }
     };
 
+    const [editStaff, setEditStaff] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+
     const handleAdd = async (e) => {
         e.preventDefault();
         try {
@@ -34,6 +37,33 @@ const StaffManager = () => {
             fetchStaff();
         } catch (err) {
             alert('Error: ' + err.message);
+        }
+    };
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        try {
+            // Remove password from payload if it's empty
+            const payload = { ...editStaff };
+            if (!payload.password) delete payload.password;
+
+            await API.patch(`/admin/staff/${editStaff.id}`, payload);
+            setShowEditModal(false);
+            setEditStaff(null);
+            fetchStaff();
+        } catch (err) {
+            alert('Error: ' + err.message);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Ma huba dhalista shaqaalahan?')) {
+            try {
+                await API.delete(`/admin/staff/${id}`);
+                fetchStaff();
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
         }
     };
 
