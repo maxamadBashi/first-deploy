@@ -25,7 +25,7 @@
     * {
         @apply antialiased;
     }
-    
+
     body {
         @apply bg-gradient-to-br from-slate-50 via-indigo-50/30 to-sky-50/50 text-slate-900;
         background-attachment: fixed;
@@ -47,36 +47,28 @@
     }
 
     .btn-primary {
-        @apply px-8 py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 text-white font-bold rounded-2xl 
-        hover:from-indigo-700 hover:via-purple-700 hover:to-indigo-700 
-        transition-all duration-300 shadow-xl shadow-indigo-500/30 
-        transform hover:-translate-y-1 hover:scale-105 active:translate-y-0 active:scale-100
-        relative overflow-hidden group;
+        @apply px-8 py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 text-white font-bold rounded-2xl hover:from-indigo-700 hover:via-purple-700 hover:to-indigo-700 transition-all duration-300 shadow-xl shadow-indigo-500/30 transform hover:-translate-y-1 hover:scale-105 active:translate-y-0 active:scale-100 relative overflow-hidden;
     }
 
     .btn-primary::before {
         content: '';
-        @apply absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 
-        translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700;
+        @apply absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] transition-transform duration-700;
+    }
+
+    .btn-primary:hover::before {
+        @apply translate-x-[100%];
     }
 
     .input-field {
-        @apply w-full px-5 py-4 bg-white/80 backdrop-blur-sm border-2 border-slate-200/60 
-        rounded-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 
-        outline-none transition-all duration-300 hover:border-indigo-300 hover:bg-white;
+        @apply w-full px-5 py-4 bg-white/80 backdrop-blur-sm border-2 border-slate-200/60 rounded-2xl focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all duration-300 hover:border-indigo-300 hover:bg-white;
     }
 
     .card {
-        @apply bg-white/90 backdrop-blur-xl rounded-3xl border border-white/60 
-        shadow-xl shadow-indigo-100/30 hover:shadow-2xl hover:shadow-indigo-200/40 
-        transition-all duration-300 hover:-translate-y-1;
+        @apply bg-white/90 backdrop-blur-xl rounded-3xl border border-white/60 shadow-xl shadow-indigo-100/30 hover:shadow-2xl hover:shadow-indigo-200/40 transition-all duration-300 hover:-translate-y-1;
     }
 
     .card-gradient {
-        @apply bg-gradient-to-br from-white via-indigo-50/30 to-purple-50/30 
-        backdrop-blur-xl rounded-3xl border border-white/60 
-        shadow-xl shadow-indigo-100/30 hover:shadow-2xl 
-        transition-all duration-300 hover:-translate-y-1;
+        @apply bg-gradient-to-br from-white via-indigo-50/30 to-purple-50/30 backdrop-blur-xl rounded-3xl border border-white/60 shadow-xl shadow-indigo-100/30 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1;
     }
 
     /* Custom scrollbar */
@@ -104,15 +96,30 @@
     }
 
     @keyframes gradientShift {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
     }
 
     /* Floating animation */
     @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
     }
 
     .float {
@@ -121,8 +128,15 @@
 
     /* Pulse glow */
     @keyframes pulse-glow {
-        0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
-        50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+
+        0%,
+        100% {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        50% {
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.6);
+        }
     }
 
     .pulse-glow {
@@ -131,17 +145,20 @@
 
     /* Shimmer effect */
     @keyframes shimmer {
-        0% { background-position: -1000px 0; }
-        100% { background-position: 1000px 0; }
+        0% {
+            background-position: -1000px 0;
+        }
+
+        100% {
+            background-position: 1000px 0;
+        }
     }
 
     .shimmer {
-        background: linear-gradient(
-            90deg,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.3) 50%,
-            rgba(255, 255, 255, 0) 100%
-        );
+        background: linear-gradient(90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 100%);
         background-size: 1000px 100%;
         animation: shimmer 2s infinite;
     }
