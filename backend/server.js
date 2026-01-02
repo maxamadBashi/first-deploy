@@ -192,6 +192,28 @@ const initDB = async () => {
     }
 };
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error('SERVER ERROR:', err);
+
+    // Specific handle for Multer errors (like file size limit)
+    if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({
+            message: 'Sawirka aad soo gelisay waa uu aad u weyn yahay (ugu badnaan 10MB)',
+            error: 'File too large'
+        });
+    }
+
+    res.status(err.status || 500).json({
+        message: err.message || 'Internal Server Error',
+        error: process.env.NODE_ENV === 'development' ? err : {}
+    });
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, async () => {

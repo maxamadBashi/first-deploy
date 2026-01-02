@@ -15,14 +15,17 @@ cloudinary.config({
 });
 
 // Configure Cloudinary Storage
-const cloudinaryStorage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'karaama_restaurant',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-        public_id: (req, file) => Date.now() + '-' + path.parse(file.originalname).name
-    }
-});
+let cloudinaryStorage;
+if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_CLOUD_NAME !== 'youdetail') {
+    cloudinaryStorage = new CloudinaryStorage({
+        cloudinary: cloudinary,
+        params: {
+            folder: 'karaama_restaurant',
+            allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+            public_id: (req, file) => Date.now() + '-' + path.parse(file.originalname).name
+        }
+    });
+}
 
 
 // Configure Multer for image uploads
@@ -39,7 +42,7 @@ const upload = multer({
     storage: (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_CLOUD_NAME !== 'youdetail')
         ? cloudinaryStorage
         : storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
     fileFilter: (req, file, cb) => {
         const filetypes = /jpeg|jpg|png|webp/;
         const mimetype = filetypes.test(file.mimetype);
@@ -140,17 +143,36 @@ router.delete('/categories/:id', authMiddleware, isAdmin, async (req, res) => {
     }
 });
 
+console.log('--- ENTERING POST /menu-items ---');
 router.post('/menu-items', authMiddleware, isAdmin, upload.single('image'), async (req, res) => {
+    console.log('Inside POST /menu-items handler');
     const { category_id, name, description, price, discount } = req.body;
+    console.log('Body:', { category_id, name, price });
+    console.log('File:', req.file ? 'Attached' : 'None');
+
     try {
-        const catRes = await db.query('SELECT name FROM categories WHERE id = $1', [category_id]);
-        const categoryName = catRes.rows.length > 0 ? catRes.rows[0].name : 'Uncategorized';
+        let categoryName = 'Uncategorized';
+
+        if (category_id && !isNaN(parseInt(category_id))) {
+            console.log('Fetching category name for ID:', category_id);
+            const catRes = await db.query('SELECT name FROM categories WHERE id = $1', [parseInt(category_id)]);
+            if (catRes.rows.length > 0) {
+                categoryName = catRes.rows[0].name;
+            }
+            console.log('Category name detected:', categoryName);
+        }
 
         let image_url = req.body.image_url || '';
         if (req.file) {
-            // Cloudinary provides 'path' or 'secure_url'
-            image_url = req.file.path || req.file.secure_url || `/uploads/${req.file.filename}`;
+            console.log('File metadata:', req.file);
+            // If it's a Cloudinary URL, it will start with http
+            if (req.file.path && req.file.path.startsWith('http')) {
+                image_url = req.file.path;
+            } else {
+                image_url = `/uploads/${req.file.filename}`;
+            }
         }
+        console.log('Final image_url to save:', image_url);
 
         const result = await db.query(
             'INSERT INTO menu_items (category, name, description, price, image_url, discount_percentage) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
@@ -165,8 +187,12 @@ router.post('/menu-items', authMiddleware, isAdmin, upload.single('image'), asyn
 
         res.status(201).json(newItem);
     } catch (error) {
-        console.error('Menu Item Create Error:', error);
-        res.status(500).json({ message: error.message });
+        console.error('CRITICAL ERROR in POST /menu-items:', error);
+        res.status(500).json({
+            message: 'Internal Server Error',
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
 
@@ -174,15 +200,19 @@ router.patch('/menu-items/:id', authMiddleware, isAdmin, upload.single('image'),
     const { category_id, name, description, price, discount, is_available } = req.body;
     try {
         let categoryName;
-        if (category_id) {
-            const catRes = await db.query('SELECT name FROM categories WHERE id = $1', [category_id]);
+        if (category_id && !isNaN(parseInt(category_id))) {
+            const catRes = await db.query('SELECT name FROM categories WHERE id = $1', [parseInt(category_id)]);
             categoryName = catRes.rows.length > 0 ? catRes.rows[0].name : undefined;
         }
 
         let image_url;
         if (req.file) {
-            // Cloudinary provides 'path' or 'secure_url'
-            image_url = req.file.path || req.file.secure_url || `/uploads/${req.file.filename}`;
+            console.log('File metadata (patch):', req.file);
+            if (req.file.path && req.file.path.startsWith('http')) {
+                image_url = req.file.path;
+            } else {
+                image_url = `/uploads/${req.file.filename}`;
+            }
         }
 
         const result = await db.query(
@@ -206,6 +236,7 @@ router.patch('/menu-items/:id', authMiddleware, isAdmin, upload.single('image'),
 
         res.json(updatedItem);
     } catch (error) {
+        console.error('CRITICAL ERROR in PATCH /menu-items:', error);
         res.status(500).json({ message: error.message });
     }
 });
